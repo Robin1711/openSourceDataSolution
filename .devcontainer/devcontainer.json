@@ -1,0 +1,20 @@
+{
+  "name": "Self-Hosted Data Solution",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/workspace",
+  "extensions": [
+    "ms-azuretools.vscode-docker",
+    "redhat.vscode-yaml"
+  ],
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "postCreateCommand": "echo 'Devcontainer setup complete'",
+  "customizations": {
+    "vscode": {
+      "settings": {},
+      "extensions": []
+    }
+  }
+}

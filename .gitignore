@@ -1,8 +1,8 @@
 ### Self added ignored files:
 .DS_Store
 ._*
-**/data
-
+**/data/*
+!**/data/.gitkeep
 
 ### https://github.com/github/gitignore/blob/main/Python.gitignore
 # Byte-compiled / optimized / DLL files

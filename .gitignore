@@ -1,6 +1,7 @@
 ### Self added ignored files:
 .DS_Store
 ._*
+**data/*
 
 
 ### https://github.com/github/gitignore/blob/main/Python.gitignore

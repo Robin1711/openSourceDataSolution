@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  airflow:
+    build: ./airflow
+    container_name: airflow
+    restart: always
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+    ports:
+      - "8080:8080"
+    depends_on:
+      - minio
+      - vault
+      - pyspark
+
+  pyspark:
+    build: ./pyspark
+    container_name: pyspark
+    restart: always
+    environment:
+      - SPARK_MASTER_HOST=spark-master                # Use service name, not localhost
+      - SPARK_MASTER_URL=spark://spark-master:7077    # Ensure this is used
+    volumes:
+      - ./pyspark/data:/data
+    depends_on:
+      - minio
+    ports:
+      - "4040:4040"   # Spark UI
+      - "7077:7077"   # Spark master
+      - "8080:8080"   # Spark master web UI
+
+  # spark-master:
+  #   image: bitnami/spark
+  #   container_name: spark-master
+  #   environment:
+  #     - SPARK_MODE=master
+  #   ports:
+  #     - "7077:7077"  # Expose Spark master port
+
+  minio:
+    build: ./minio
+    container_name: minio
+    restart: always
+    environment:
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+    volumes:
+      - ./minio/data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  vault:
+    build: ./vault
+    container_name: vault
+    restart: always
+    cap_add:
+      - IPC_LOCK
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=root
+      - VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200     # Ensures Vault listens on all interfaces
+    ports:
+      - "8200:8200"
+
+  metabase:
+    build: ./metabase
+    container_name: metabase
+    restart: always
+    environment:
+      - MB_DB_FILE=/metabase-data/metabase.db
+    volumes:
+      - ./metabase/data:/metabase-data
+    ports:
+      - "3000:3000"
